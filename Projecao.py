@@ -111,10 +111,10 @@ def projetar_bases(bases, nomes_reducao, numero_repeticoes):
                 projecao_teste_x = teste_x @ autovetores
                 ##########################
                 
-                resultado_tree = None
-                resultado_gnb = None
-                resultado_knn = None
-                resultado_lda = None
+                resultado_tree = []
+                resultado_gnb = []
+                resultado_knn = []
+                resultado_lda = []
                 
                 ########## Demais Tipos de redução de dimensionalidade ########
                 if "info_gain" in nome_reducao:
@@ -132,14 +132,12 @@ def projetar_bases(bases, nomes_reducao, numero_repeticoes):
                     Sk = MCEPCA(projecao_treino_x, treino_x, maximo, classes, treino_y, autovalores, autovetores)
                     treino_reduzido_x = treino_x @ Sk
                     teste_reduzido_x = teste_x @ Sk
-                #elif "chi_square" in nome_reducao:
-                    # problema: tem que fazer conversão para categorico
-                    '''for k in range(maximo):
-                        X_chi_square = chi_square(projecao_treino_x, y, k+1)'''
-                        
-                    # descobrir como ordenar matriz completa usando o chi square, ter acesso a esses dados 
-                    # e usalos para comparar as features
-                    # 
+                elif "chi2_square" in nome_reducao:
+                    X_teste_cat = projecao_treino_x.astype(int) # passando para categorico
+                    ordenado = chi2_square(X_teste_cat, treino_y, maximo)      
+                    treino_reduzido_x = projecao_treino_x[:, ordenado]
+                    teste_reduzido_x = projecao_teste_x[:, ordenado]
+                    
                 elif "correlation_coefficient" in nome_reducao:
                     # problema: tem que fazer para todas as features e testar um bom 
                     # coeficiente de correlação (testar vários)

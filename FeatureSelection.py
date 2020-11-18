@@ -62,12 +62,39 @@ def correlation_coefficient(data_frame):
     
     return list(ordem)
 
-def chi_square(X, y, k):
-    X_cat = X.astype(int)
-    chi2_features = SelectKBest(chi2, k)
-    X_kbest_features = chi2_features.fit_transform(X_cat, y)
+def selecionar_indices_chi2(chi2_features):
+    # selecionando os indices que são proeminentes
+    indices = []
+    indices_bool = chi2_features.get_support()
+    for i in range(len(indices_bool)):
+        if indices_bool[i]:
+            indices.append(i)
+    return indices
+def chi2_square(X, y, k):
+    # passando para categorico, tratando casos negativos
+    X_cat = X.astype('int')
+    X_cat_pos = np.arange(len(X_cat)*len(X_cat[0])).reshape(len(X_cat), len(X_cat[0]))
+    unicos = np.unique(X_cat) # diferentes valores inteiros
+    for unico_ind in range(len(unicos)):
+        unico = unicos[unico_ind]
+        X_cat_pos[X_cat==unico] = unico_ind + 1
     
-    return X_kbest_features # X já com as melhores features
+    ordem = [] # indices ordenados
+    for ki in range(k): # a medida que ki aumenta surge um novo indice
+        chi2_features = SelectKBest(chi2, ki+1)
+        X_kbest_features = chi2_features.fit_transform(X_cat_pos, y)
+        
+        # selecionando os indices que são proeminentes
+        indices = selecionar_indices_chi2(chi2_features)   
+        # adiciona o novo indice aos indices ordenados
+        #print(len(np.setdiff1d(ordem, indices)))
+        #ordem.append(np.setdiff1d(ordem, indices))
+        for indice in indices:
+            if indice not in ordem:
+                ordem.append(indice)
+                break
+
+    return ordem
 
 def MCEPCA(W, X, k, classes, Y, autovalores, autovetores):
     n = len(X)

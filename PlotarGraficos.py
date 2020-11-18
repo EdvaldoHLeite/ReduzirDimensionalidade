@@ -4,58 +4,94 @@ from sklearn.feature_selection import mutual_info_classif
 from skfeature.function.similarity_based import fisher_score
 import matplotlib.pyplot as plt
 
-def info_gain_grafico(base):
-    X = base[0]
-    y = base[1]
+import pandas as pd
+import numpy as np
+
+def info_gain_grafico(base, repeticoes):
     nome = base[2]
     colunas = base[3]
 
-    importances = mutual_info_classif(X, y)
-    feat_importances = pd.Series(importances, colunas)
+    # data frame
+    feat_importances = pd.Series(data=np.arange(len(colunas)), index=colunas)
+    # calculando media
+    for i in range(repeticoes):
+        data = pd.read_csv("resultados/repeticoes-"+str(repeticoes)+
+                            "/"+nome+"/reducoes_resultados/info_gain-"+
+                            str(i+1)+".csv")
+
+        data.columns = ['columns', 'values']
+        dataSeries = pd.Series(data=np.array(data['values']), index=np.array(data['columns']).astype(str))
+        #print(dataSeries.index)
+        for coluna in list(colunas):
+            #print(data[coluna])
+            feat_importances[coluna] += dataSeries[coluna]/repeticoes
+    # plotagem
     feat_importances.sort_values(inplace=True)
     feat_importances.plot(kind='barh', color='teal')
     plt.title(nome+" - Info Gain")
     plt.show()
     plt.close()
 
-def fisher_score_grafico(base):
-    X = base[0]
-    y = base[1]
+def fisher_score_grafico(base, repeticoes):
     nome = base[2]
     colunas = base[3]
-    
-    ranks = fisher_score.fisher_score(X, y)
-    feat_importances = pd.Series(ranks, colunas)
+
+    # data frame
+    feat_importances = pd.Series(data=np.arange(len(colunas)), index=colunas)
+    # calculando media
+    for i in range(repeticoes):
+        data = pd.read_csv("resultados/repeticoes-"+str(repeticoes)+
+                            "/"+nome+"/reducoes_resultados/fisher_score-"+
+                            str(i+1)+".csv")
+
+        data.columns = ['columns', 'values']
+        dataSeries = pd.Series(data=np.array(data['values']), index=np.array(data['columns']).astype(str))
+        #print(dataSeries.index)
+        for coluna in list(colunas):
+            #print(data[coluna])
+            feat_importances[coluna] += dataSeries[coluna]/repeticoes
+    # plotagem
     feat_importances.sort_values(inplace=True)
     feat_importances.plot(kind='barh', color='teal')
     plt.title(nome+" - Fisher`s Score")
     plt.show()
     plt.close()
     
+def fisher_info_gain():
+    bases = [banknote(), climate(), debrecen(),
+        pima(), vcolumn(), wdbc(), spambase(),
+        occupancy()]
+    #bases=[debrecen()]
+    for base in bases:
+        fisher_score_grafico(base, 100)
+        info_gain_grafico(base, 100)
+
+    
 def graficos():
     ################ PCAs #################################################################
     nomes_reducao = ["info_gain", "MCEPCA", "fishers_score"]    
-    nomes_reducao = ['correlation_coefficient', "MCEPCA"]
+    '''nomes_reducao = ['correlation_coefficient', "MCEPCA"]'''
+    nomes_reducao = ['chi2_square', 'MCEPCA']
     ############## configuracoes das imagens graficas ######################################
     config = {"PCA":['PCA', 'g', '.'],
               "MCEPCA":["MCEPCA", 'b', '.'],
               "info_gain":["info_gain", 'r', '.'],
               "fishers_score":["fishers_score", 'g', '.'],
-              "correlation_coefficient":['correlation_coefficient', 'g', '.']}
+              "correlation_coefficient":['correlation_coefficient', 'g', '.'],
+              "chi2_square":["chi2_square", 'g', '.']}
     
     classificadores = ['tree','knn', 'gnb', 'lda']
     bases = ['Climate','VColumn', 'Debrecen',
              'WDBC', 'Banknote','Pima',
              'Spambase', 'Occupancy']
-    bases = ["Climate", "Banknote", "Debrecen", "Pima"]
+    #bases = ["Climate", "Banknote", "Debrecen", "Pima"]
     for base in bases:
-        carregar("resultados/repeticoes-1",
+        carregar("resultados/repeticoes-100",
                  base,
                  classificadores,
                  nomes_reducao,
                  config)
-
 graficos()
-        
+#fisher_info_gain()       
 
 
