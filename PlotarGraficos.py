@@ -35,18 +35,21 @@ def fisher_score_grafico(base):
 def graficos():
     ################ PCAs #################################################################
     nomes_reducao = ["info_gain", "MCEPCA", "fishers_score"]    
+    nomes_reducao = ['correlation_coefficient', "MCEPCA"]
     ############## configuracoes das imagens graficas ######################################
     config = {"PCA":['PCA', 'g', '.'],
               "MCEPCA":["MCEPCA", 'b', '.'],
               "info_gain":["info_gain", 'r', '.'],
-              "fishers_score":["fishers_score", 'g', '.']}
-
+              "fishers_score":["fishers_score", 'g', '.'],
+              "correlation_coefficient":['correlation_coefficient', 'g', '.']}
+    
     classificadores = ['tree','knn', 'gnb', 'lda']
     bases = ['Climate','VColumn', 'Debrecen',
              'WDBC', 'Banknote','Pima',
              'Spambase', 'Occupancy']
+    bases = ["Climate", "Banknote", "Debrecen", "Pima"]
     for base in bases:
-        carregar("resultados/repeticoes-100",
+        carregar("resultados/repeticoes-1",
                  base,
                  classificadores,
                  nomes_reducao,

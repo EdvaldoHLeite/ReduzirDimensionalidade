@@ -46,19 +46,28 @@ def fishers_score(X, y, dataframe_columns):
     ordenado = np.argsort(feat_importances[::-1]) # ordenado em ordem decrescente
     return list(ordenado), feat_importances
 
-def pearson_correlation_coefficient(data_frame, threshold):
-    correlacao = data_frame.corr()
-    a=abs(correlacao['petal_width'])
-    result=a[a>threshold]   
+def correlation_coefficient(data_frame):
+    '''correlacao = data_frame.corr()
+    a=abs(correlacao[target])
+    result=a[a<threshold]    
+    return list(result.index)'''
     
-    return result
+    correlacao = data_frame.corr() # matriz de correlacoes
+    somas_corr = [] # somas das correlacoes para cada feature
+    for c in correlacao.columns:
+        somas_corr.append(correlacao[c].sum())
+        
+    somas_corr = np.array(somas_corr)
+    ordem = np.argsort(somas_corr)
+    
+    return list(ordem)
 
 def chi_square(X, y, k):
     X_cat = X.astype(int)
     chi2_features = SelectKBest(chi2, k)
     X_kbest_features = chi2_features.fit_transform(X_cat, y)
     
-    return X_kbest_features
+    return X_kbest_features # X já com as melhores features
 
 def MCEPCA(W, X, k, classes, Y, autovalores, autovetores):
     n = len(X)

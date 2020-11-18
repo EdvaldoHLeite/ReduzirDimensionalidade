@@ -111,7 +111,11 @@ def projetar_bases(bases, nomes_reducao, numero_repeticoes):
                 projecao_teste_x = teste_x @ autovetores
                 ##########################
                 
-                                    
+                resultado_tree = None
+                resultado_gnb = None
+                resultado_knn = None
+                resultado_lda = None
+                
                 ########## Demais Tipos de redução de dimensionalidade ########
                 if "info_gain" in nome_reducao:
                     ordenado, feature_importances = info_gain(projecao_treino_x, treino_y, nomes_colunas)
@@ -128,16 +132,27 @@ def projetar_bases(bases, nomes_reducao, numero_repeticoes):
                     Sk = MCEPCA(projecao_treino_x, treino_x, maximo, classes, treino_y, autovalores, autovetores)
                     treino_reduzido_x = treino_x @ Sk
                     teste_reduzido_x = teste_x @ Sk
-                elif "chi_square" in nome_reducao:
-                    #X_chi_square = chi_square(projecao_treino_x, y, )
+                #elif "chi_square" in nome_reducao:
+                    # problema: tem que fazer conversão para categorico
+                    '''for k in range(maximo):
+                        X_chi_square = chi_square(projecao_treino_x, y, k+1)'''
+                        
                     # descobrir como ordenar matriz completa usando o chi square, ter acesso a esses dados 
                     # e usalos para comparar as features
                     # 
-                #elif "correlation_coefficient" in nome_reducao:
-                    
+                elif "correlation_coefficient" in nome_reducao:
+                    # problema: tem que fazer para todas as features e testar um bom 
+                    # coeficiente de correlação (testar vários)
+                    new_data = pd.DataFrame(data=projecao_treino_x, columns=[str(coluna) for coluna in range(maximo)]) # criação de um dataframe temporario para calcular a matriz de correlacao
+                    ordenado = correlation_coefficient(new_data)
+                    print(ordenado)
+                    treino_reduzido_x = projecao_treino_x[:, ordenado]
+                    teste_reduzido_x = projecao_teste_x[:,ordenado]
                 ###############################################################
                                 
-                ############### Classificacao dos resultados ###############################
+                # os resultados das excecoes sao feitos diferentes
+                #if "correlation_coefficient" not in nome_reducao:
+                    ############### Classificacao dos resultados ###############################
                 resultado_tree = treino_teste(tree_reducao, treino_reduzido_x, teste_reduzido_x, treino_y, teste_y)
                 resultado_gnb = treino_teste(gnb_reducao, treino_reduzido_x, teste_reduzido_x, treino_y, teste_y)
                 resultado_knn = treino_teste(knn_reducao, treino_reduzido_x, teste_reduzido_x, treino_y, teste_y)
