@@ -12,8 +12,8 @@ def main():
         occupancy()]
     #bases = [climate()]#, banknote(), debrecen(), pima()]
     
-    repeticoes = 100
-    nomes_reducao = ['chi2_square']#'correlation_coefficient']#"fishers_score", "info_gain"]# nomes das reducoes       
+    repeticoes = 10
+    nomes_reducao = ['correlation_coefficient']#'correlation_coefficient']#"fishers_score", "info_gain"]# nomes das reducoes       
     projetar_bases(bases, nomes_reducao, repeticoes)
     
     # pearson_correlation_coefficient

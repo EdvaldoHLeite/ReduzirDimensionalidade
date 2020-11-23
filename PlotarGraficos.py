@@ -71,7 +71,7 @@ def graficos():
     ################ PCAs #################################################################
     nomes_reducao = ["info_gain", "MCEPCA", "fishers_score"]    
     '''nomes_reducao = ['correlation_coefficient', "MCEPCA"]'''
-    nomes_reducao = ['chi2_square', 'MCEPCA']
+    nomes_reducao = ['correlation_coefficient', 'MCEPCA']
     ############## configuracoes das imagens graficas ######################################
     config = {"PCA":['PCA', 'g', '.'],
               "MCEPCA":["MCEPCA", 'b', '.'],
@@ -86,12 +86,12 @@ def graficos():
              'Spambase', 'Occupancy']
     #bases = ["Climate", "Banknote", "Debrecen", "Pima"]
     for base in bases:
-        carregar("resultados/repeticoes-100",
+        carregar("resultados/repeticoes-1",
                  base,
                  classificadores,
                  nomes_reducao,
                  config)
-graficos()
+#graficos()
 #fisher_info_gain()       
 
 

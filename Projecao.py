@@ -143,7 +143,6 @@ def projetar_bases(bases, nomes_reducao, numero_repeticoes):
                     # coeficiente de correlação (testar vários)
                     new_data = pd.DataFrame(data=projecao_treino_x, columns=[str(coluna) for coluna in range(maximo)]) # criação de um dataframe temporario para calcular a matriz de correlacao
                     ordenado = correlation_coefficient(new_data)
-                    print(ordenado)
                     treino_reduzido_x = projecao_treino_x[:, ordenado]
                     teste_reduzido_x = projecao_teste_x[:,ordenado]
                 ###############################################################

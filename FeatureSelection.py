@@ -19,7 +19,7 @@ def PCA(X): # retorna matriz centralizada e covariancia
     #aut_val, aut_vet = eigen.eig(covariancia.T) # uma matriz e sua transposta tem os mesmos autovetores
     # os autovetores são as colunas
     save = str(aut_val)
-    ordenado = np.argsort(aut_val)[::-1]
+    #ordenado = np.argsort(aut_val)[::-1]
     save2 = str(aut_val)
     if save != save2:
         print("Opa os autovetores foram modificados durante o PCA, não podem ser usados no MCEPCA")
@@ -46,6 +46,7 @@ def fishers_score(X, y, dataframe_columns):
     ordenado = np.argsort(feat_importances[::-1]) # ordenado em ordem decrescente
     return list(ordenado), feat_importances
 
+# escolhe as features por menor soma de coefientes
 def correlation_coefficient(data_frame):
     '''correlacao = data_frame.corr()
     a=abs(correlacao[target])
@@ -61,6 +62,30 @@ def correlation_coefficient(data_frame):
     ordem = np.argsort(somas_corr)
     
     return list(ordem)
+
+# variacao selecionando o melhor grupo para cada quantidade de features
+def correlation_coefficient_2(data_frame):    
+    correlacao = data_frame.corr() # matriz de correlacoes
+    
+    # combinacoes para cada k quantidade de features    
+    grupos_indices = []
+    # inicia com o maior valor possivel de somas de coeficientes
+    menor_soma = (1.0)*len(correlacao)
+    # para cada quantidade de features
+    for k in range(len(correlacao)):
+        # para cada feature como target, um grupo diferente
+        melhor_grupo = []
+        for ind_feat in range(len(correlacao)):
+            ind_menores = np.argsort(correlacao[ind_feat])[k+1]
+            soma = ind_menores.sum()
+            
+            if soma < menor_soma:
+                menor_soma = soma
+                melhor_grupo = ind_menores
+            
+        grupos_indices.append(melhor_grupo)
+        
+    return grupos_indices
 
 def selecionar_indices_chi2(chi2_features):
     # selecionando os indices que são proeminentes
