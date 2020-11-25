@@ -145,6 +145,14 @@ def projetar_bases(bases, nomes_reducao, numero_repeticoes):
                     ordenado = correlation_coefficient(new_data)
                     treino_reduzido_x = projecao_treino_x[:, ordenado]
                     teste_reduzido_x = projecao_teste_x[:,ordenado]
+                elif "RFE" in nome_reducao:
+                    ordenado = RFE_linear_regression(projecao_treino_x, treino_y)
+                    treino_reduzido_x = projecao_treino_x[:, ordenado]
+                    teste_reduzido_x = projecao_teste_x[:,ordenado]
+                elif "Forward" in nome_reducao:
+                    ordenado = forward_linear_regression(projecao_treino_x, treino_y)
+                    treino_reduzido_x = projecao_treino_x[:, ordenado]
+                    teste_reduzido_x = projecao_teste_x[:,ordenado]
                 ###############################################################
                                 
                 # os resultados das excecoes sao feitos diferentes

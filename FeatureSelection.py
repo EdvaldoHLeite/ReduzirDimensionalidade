@@ -6,6 +6,10 @@ from tqdm import tqdm
 from sklearn.feature_selection import mutual_info_classif
 from sklearn.feature_selection import chi2, SelectKBest # chi square
 from skfeature.function.similarity_based import fisher_score
+from sklearn.feature_selection import RFE
+from mlxtend.feature_selection import SequentialFeatureSelector
+
+from sklearn.linear_model import LinearRegression
 
 def PCA(X): # retorna matriz centralizada e covariancia
     media_matriz = X.mean(axis=0)
@@ -119,6 +123,72 @@ def chi2_square(X, y, k):
                 ordem.append(indice)
                 break
 
+    return ordem
+
+def forward_linear_regression(X, y):
+    #dataset = pd.DataFrame(data=y, columns=['target'])
+    
+    #### passando o y para numerico
+    '''f=0 # numero de um target
+    valores = y.unique()
+    for val in valores:
+        f=f+1
+        # substitui cada target por um numero
+        dataset['target'].replace([feature], [f])'''
+    # diferentes valores de y
+    '''valores = np.unique(y)
+    # troca um target por um numero
+    dataset['target'].replace(list(valores), list(np.arange(len(valores))))
+    y = np.array(dataset['target'])'''
+    
+    lr = LinearRegression()
+    
+    ordem = [] 
+    # encontra as features para cada quantidade 
+    # adicionando em seguida na lista ordenada, as primeiras que aparecem
+    for k in range(len(X[0])):
+        ffs = SequentialFeatureSelector(estimator=lr, k_features=k+1)
+        ffs.fit(X, y)
+        indices = ffs.k_feature_idx_ #list(np.where(rfe.support_ == True)[0])
+        # verifica se o indice nao existe na lista ordenada
+        for indice in indices:
+            if indice not in ordem:
+                ordem.append(indice)
+                break
+        
+    return ordem
+
+def RFE_linear_regression(X, y):
+    dataset = pd.DataFrame(data=y, columns=['target'])
+    
+    #### passando o y para numerico
+    '''f=0 # numero de um target
+    valores = y.unique()
+    for val in valores:
+        f=f+1
+        # substitui cada target por um numero
+        dataset['target'].replace([feature], [f])'''
+    # diferentes valores de y
+    valores = np.unique(y)
+    # troca um target por um numero
+    dataset['target'].replace(list(valores), list(np.arange(len(valores))))
+    y = np.array(dataset['target'])
+    
+    lr = LinearRegression()
+    
+    ordem = [] 
+    # encontra as features para cada quantidade 
+    # adicionando em seguida na lista ordenada, as primeiras que aparecem
+    for k in range(len(X[0])):
+        rfe = RFE(estimator=lr, n_features_to_select=k+1, step=1)
+        rfe.fit(X, y)
+        indices = list(np.where(rfe.support_ == True)[0])
+        # verifica se o indice nao existe na lista ordenada
+        for indice in indices:
+            if indice not in ordem:
+                ordem.append(indice)
+                break
+        
     return ordem
 
 def MCEPCA(W, X, k, classes, Y, autovalores, autovetores):
