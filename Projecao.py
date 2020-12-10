@@ -162,6 +162,13 @@ def projetar_bases(bases, nomes_reducao, numero_repeticoes):
                     quantidade_features_reducao += len(ind_features)
                     treino_reduzido_x = projecao_treino_x[:, ind_features]
                     teste_reduzido_x = projecao_teste_x[:, ind_features]
+                elif "LASSO" in nome_reducao:
+                    ind_features = LASSO(projecao_treino_x, treino_y)
+                    
+                    quantidade_features_reducao += len(ind_features)
+                    
+                    treino_reduzido_x = projecao_treino_x[:, ind_features]
+                    teste_reduzido_x = projecao_teste_x[:, ind_features]
                                         
                 ###############################################################
                                 
@@ -169,7 +176,7 @@ def projetar_bases(bases, nomes_reducao, numero_repeticoes):
                 #if "correlation_coefficient" not in nome_reducao:
                     ############### Classificacao dos resultados ###############################
                 
-                if "variance_threshold" in nome_reducao:
+                if "variance_threshold" in nome_reducao or "LASSO" in nome_reducao:
                     quant_feat = len(X[0])
                     resultado_tree = list(np.full(quant_feat, treino_teste_unico(tree_reducao, treino_reduzido_x, teste_reduzido_x, treino_y, teste_y)))
                     resultado_gnb = list(np.full(quant_feat, treino_teste_unico(gnb_reducao, treino_reduzido_x, teste_reduzido_x, treino_y, teste_y)))
@@ -221,7 +228,7 @@ def projetar_bases(bases, nomes_reducao, numero_repeticoes):
                    ["resultados", "repeticoes-"+str(numero_repeticoes), nome_base], # nomes das pastas
                    nome_reducao+"_desvio_padrao", maximo)
             
-            if "variance_threshold" in nome_reducao:
+            if "variance_threshold" in nome_reducao or "LASSO" in nome_reducao:
                 print("Média de features: "+str(int(quantidade_features_reducao/numero_repeticoes)))
                 print("Original: "+str(len(X[0])))
 

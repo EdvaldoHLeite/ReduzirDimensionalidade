@@ -9,8 +9,9 @@ from sklearn.feature_selection import chi2, SelectKBest # chi square
 from sklearn.feature_selection import RFE
 from mlxtend.feature_selection import SequentialFeatureSelector
 from sklearn.feature_selection import VarianceThreshold
+from sklearn.feature_selection import SelectFromModel
 
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LinearRegression, LogisticRegression
 
 def PCA(X): # retorna matriz centralizada e covariancia
     media_matriz = X.mean(axis=0)
@@ -207,6 +208,19 @@ def variance_threshold(X):
             
     return features
             
+def LASSO(X, y):
+    logistic = LogisticRegression(C=1, penalty='l1', solver='liblinear', random_state=7).fit(X,y)
+    model=SelectFromModel(logistic, prefit=True)
+    
+    # array com os indices das features selecionadas
+    features = []
+    # array com True se a variancia for diferente
+    variancia_diferente = model.get_support()
+    for i in range(len(X[0])):
+        if variancia_diferente[i]:
+            features.append(i)
+            
+    return features
 
 def MCEPCA(W, X, k, classes, Y, autovalores, autovetores):
     n = len(X)
