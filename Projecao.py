@@ -158,7 +158,7 @@ def projetar_bases(bases, nomes_reducao, numero_repeticoes):
                     teste_reduzido_x = projecao_teste_x[:,ordenado]
                 elif "variance_threshold" in nome_reducao:
                     # diferente dos outros acima, o variance treshold usa esta lista como definitiva, não reduz a quantidade
-                    ind_features = variance_threshold(projecao_treino_x)
+                    ind_features = variance_threshold(projecao_treino_x, 0.3)
                     quantidade_features_reducao += len(ind_features)
                     treino_reduzido_x = projecao_treino_x[:, ind_features]
                     teste_reduzido_x = projecao_teste_x[:, ind_features]

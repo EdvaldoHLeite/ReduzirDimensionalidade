@@ -193,15 +193,20 @@ def RFE_linear_regression(X, y):
         
     return ordem
 
-def variance_threshold(X):
+def variance_threshold(X, limiar):
     # limiar sendo 0: a variancia das features devem ser diferente de zero
-    variance_threshold = VarianceThreshold(threshold=0.1)
-    variance_threshold.fit(X)
+    select_feature = VarianceThreshold(threshold=limiar)
+    
+    # quando não encontra variancia do limiar passado
+    try:
+        select_feature.fit(X)
+    except ValueError:
+        return variance_threshold(X, limiar-0.1)
     
     # array com os indices das features selecionadas
     features = []
     # array com True se a variancia for diferente
-    variancia_diferente = variance_threshold.get_support()
+    variancia_diferente = select_feature.get_support()
     for i in range(len(X[0])):
         if variancia_diferente[i]:
             features.append(i)
