@@ -5,9 +5,10 @@ from tqdm import tqdm
 
 from sklearn.feature_selection import mutual_info_classif
 from sklearn.feature_selection import chi2, SelectKBest # chi square
-from skfeature.function.similarity_based import fisher_score
+#from skfeature.function.similarity_based import fisher_score
 from sklearn.feature_selection import RFE
 from mlxtend.feature_selection import SequentialFeatureSelector
+from sklearn.feature_selection import VarianceThreshold
 
 from sklearn.linear_model import LinearRegression
 
@@ -190,6 +191,22 @@ def RFE_linear_regression(X, y):
                 break
         
     return ordem
+
+def variance_threshold(X):
+    # limiar sendo 0: a variancia das features devem ser diferente de zero
+    variance_threshold = VarianceThreshold(threshold=0.1)
+    variance_threshold.fit(X)
+    
+    # array com os indices das features selecionadas
+    features = []
+    # array com True se a variancia for diferente
+    variancia_diferente = variance_threshold.get_support()
+    for i in range(len(X[0])):
+        if variancia_diferente[i]:
+            features.append(i)
+            
+    return features
+            
 
 def MCEPCA(W, X, k, classes, Y, autovalores, autovetores):
     n = len(X)

@@ -26,6 +26,15 @@ def treino_teste(classificador, treino_projetado, teste_projetado, treino_y, tes
 
     return np.array(resultados)
 
+# Faz o teste para uma unica quantidade de features
+def treino_teste_unico(classificador, treino_projetado, teste_projetado, treino_y, teste_y):
+    treino = treino_projetado.astype(float)
+    teste = teste_projetado.astype(float)
+    
+    classificador.fit(treino, treino_y)
+    
+    return 100*classificador.score(teste, teste_y)
+
 # tree, knn, gnb e lda; tem os resultados de cada base e cada base tem os resultados de cada feature
 def salvar(tree, knn, gnb, lda, pastas, nome_pca, num_features):
     

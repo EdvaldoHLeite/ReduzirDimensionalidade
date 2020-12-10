@@ -10,7 +10,7 @@ from sklearn.tree import DecisionTreeClassifier as tree
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as lda
 from sklearn.model_selection import train_test_split
 
-from treino_teste import treino_teste, salvar
+from treino_teste import treino_teste, treino_teste_unico, salvar
 from FeatureSelection import *
 
 import os
@@ -85,7 +85,10 @@ def projetar_bases(bases, nomes_reducao, numero_repeticoes):
             pasta_reducoes_resultados = "bases/"+nome_base+"/reducoes_resultados/"
             criar_pasta(pasta_salvar_pca) # cria a pasta onde ficara os pca de cada iteracao
             criar_pasta(pasta_reducoes_resultados)
+            # usado para a quantidade de features media para certas reducoes
+            quantidade_features_reducao = 0
             for iteracao in range(numero_repeticoes):
+                #print("Iteração:", iteracao+1)
                 treino_indices = df_treino_indices[str(iteracao+1)]
                 teste_indices = df_teste_indices[str(iteracao+1)]
                 treino_x, teste_x = X[treino_indices], X[teste_indices]                
@@ -153,15 +156,30 @@ def projetar_bases(bases, nomes_reducao, numero_repeticoes):
                     ordenado = forward_linear_regression(projecao_treino_x, treino_y)
                     treino_reduzido_x = projecao_treino_x[:, ordenado]
                     teste_reduzido_x = projecao_teste_x[:,ordenado]
+                elif "variance_threshold" in nome_reducao:
+                    # diferente dos outros acima, o variance treshold usa esta lista como definitiva, não reduz a quantidade
+                    ind_features = variance_threshold(projecao_treino_x)
+                    quantidade_features_reducao += len(ind_features)
+                    treino_reduzido_x = projecao_treino_x[:, ind_features]
+                    teste_reduzido_x = projecao_teste_x[:, ind_features]
+                                        
                 ###############################################################
                                 
                 # os resultados das excecoes sao feitos diferentes
                 #if "correlation_coefficient" not in nome_reducao:
                     ############### Classificacao dos resultados ###############################
-                resultado_tree = treino_teste(tree_reducao, treino_reduzido_x, teste_reduzido_x, treino_y, teste_y)
-                resultado_gnb = treino_teste(gnb_reducao, treino_reduzido_x, teste_reduzido_x, treino_y, teste_y)
-                resultado_knn = treino_teste(knn_reducao, treino_reduzido_x, teste_reduzido_x, treino_y, teste_y)
-                resultado_lda = treino_teste(lda_reducao, treino_reduzido_x, teste_reduzido_x, treino_y, teste_y)
+                
+                if "variance_threshold" in nome_reducao:
+                    quant_feat = len(X[0])
+                    resultado_tree = list(np.full(quant_feat, treino_teste_unico(tree_reducao, treino_reduzido_x, teste_reduzido_x, treino_y, teste_y)))
+                    resultado_gnb = list(np.full(quant_feat, treino_teste_unico(gnb_reducao, treino_reduzido_x, teste_reduzido_x, treino_y, teste_y)))
+                    resultado_knn = list(np.full(quant_feat, treino_teste_unico(knn_reducao, treino_reduzido_x, teste_reduzido_x, treino_y, teste_y)))
+                    resultado_lda = list(np.full(quant_feat, treino_teste_unico(lda_reducao, treino_reduzido_x, teste_reduzido_x, treino_y, teste_y)))
+                else:
+                    resultado_tree = treino_teste(tree_reducao, treino_reduzido_x, teste_reduzido_x, treino_y, teste_y)
+                    resultado_gnb = treino_teste(gnb_reducao, treino_reduzido_x, teste_reduzido_x, treino_y, teste_y)
+                    resultado_knn = treino_teste(knn_reducao, treino_reduzido_x, teste_reduzido_x, treino_y, teste_y)
+                    resultado_lda = treino_teste(lda_reducao, treino_reduzido_x, teste_reduzido_x, treino_y, teste_y)
 
                 ### adicionando resultados de cada feature
                 mediasTree += resultado_tree
@@ -174,20 +192,19 @@ def projetar_bases(bases, nomes_reducao, numero_repeticoes):
                 mediasIteracoesNB.append(resultado_gnb)
                 mediasIteracoesKNN.append(resultado_knn)
                 mediasIteracoesLD.append(resultado_lda)
-
+            
             # os vetores com as somas dos resultados em cada feature sao divididos para obter a media
             mediasTree = mediasTree/numero_repeticoes
             mediasNB = mediasNB/numero_repeticoes
             mediasKNN = mediasKNN/numero_repeticoes
             mediasLD = mediasLD/numero_repeticoes
-
+            
             # desvio padrão
-
             desvioTree = []
             desvioNB=[]
             desvioKNN=[]
             desvioLD=[]
-            # estraindo o desvio padrao
+            # extraindo o desvio padrao
             for f in range(maximo):
                 desvioTree.append(pd.Series(mediasTree).std())
                 desvioNB.append(pd.Series(mediasNB).std())
@@ -203,5 +220,9 @@ def projetar_bases(bases, nomes_reducao, numero_repeticoes):
             salvar(desvioTree, desvioKNN, desvioNB, desvioLD, # desvios padroes dos resultados anteriores
                    ["resultados", "repeticoes-"+str(numero_repeticoes), nome_base], # nomes das pastas
                    nome_reducao+"_desvio_padrao", maximo)
+            
+            if "variance_threshold" in nome_reducao:
+                print("Média de features: "+str(int(quantidade_features_reducao/numero_repeticoes)))
+                print("Original: "+str(len(X[0])))
 
         
