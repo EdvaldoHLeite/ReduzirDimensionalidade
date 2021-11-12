@@ -1,7 +1,7 @@
 from treino_teste import carregar, criar_pasta
 from carregar_bases import *
 from sklearn.feature_selection import mutual_info_classif
-from skfeature.function.similarity_based import fisher_score
+#from skfeature.function.similarity_based import fisher_score
 import matplotlib.pyplot as plt
 
 import pandas as pd
@@ -69,24 +69,25 @@ def fisher_info_gain():
     
 def graficos():
     ################ PCAs #################################################################
-    nomes_reducao = ["info_gain", "MCEPCA", "fishers_score"]    
-    '''nomes_reducao = ['correlation_coefficient', "MCEPCA"]'''
-    nomes_reducao = ['correlation_coefficient', 'MCEPCA']
+    nomes_reducao = ["Forward", "MCEPCA"]    
+    #nomes_reducao = ["variance_threshold", "MCEPCA"]
     ############## configuracoes das imagens graficas ######################################
-    config = {"PCA":['PCA', 'g', '.'],
+    config = {"PCA":['PCA', 'r', '.'],
               "MCEPCA":["MCEPCA", 'b', '.'],
-              "info_gain":["info_gain", 'r', '.'],
+              "info_gain":["info_gain", 'k', '.'],
               "fishers_score":["fishers_score", 'g', '.'],
               "correlation_coefficient":['correlation_coefficient', 'g', '.'],
-              "chi2_square":["chi2_square", 'g', '.']}
+              "chi2_square":["chi2_square", 'g', '.'],
+              "RFE":["RFE", 'y', '.'],
+              "Forward":["Forward", 'g', '.'],
+              "variance_threshold":["Variance Threshold: 0.1", 'g', '.'],
+              "LASSO":["LASSO", "r", "."]}
     
     classificadores = ['tree','knn', 'gnb', 'lda']
-    bases = ['Climate','VColumn', 'Debrecen',
-             'WDBC', 'Banknote','Pima',
-             'Spambase', 'Occupancy']
-    #bases = ["Climate", "Banknote", "Debrecen", "Pima"]
+    bases = ["Banknote", "Climate", "Debrecen", 
+             "Pima", "VColumn", "WDBC", "Occupancy"]
     for base in bases:
-        carregar("resultados/repeticoes-1",
+        carregar("resultados/repeticoes-100",
                  base,
                  classificadores,
                  nomes_reducao,

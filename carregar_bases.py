@@ -3,6 +3,14 @@ import numpy as np
 from scipy.io import arff
 ########################################### Duas classes ##########################################
 
+
+
+#############################################3
+###################     ERROR       #################
+# header deve ser None, se nao ele pega a primeira linha e diz ser o cabecalho
+##########################3
+
+
 def pima():
     df = pd.read_csv('bases/pima/pima-indians-diabetes.csv', sep=',')
     # possui os dados
@@ -225,21 +233,6 @@ def wine():
     
     return [x, y, 'Wine', df.drop("Class", 1).columns]
     
-def winequality():
-    df = pd.read_csv('bases/winequality/winequality.csv', sep=';')
-
-    df.columns = ['fixed_acidity','volatile_acidity','citric_acid','residual_sugar','chlorides','free_sulfur_dioxide','total_sulfur_dioxide','density','pH','sulphates','alcohol','quality','Class']
-    print (type(df['citric_acid'][0]))
-    x = np.array(df.drop("Class", 1).drop('alcohol', 1))
-    y = np.array(df.Class)
-
-    '''for i in x:
-        for j in i:
-            if type(j) != "<class 'numpy.float64'>":
-                print (type(j))'''
-    
-    return [x, y, 'Wine Quality', df.drop("Class", 1).drop('alcohol', 1).columns]
-    
 def hill_valley():
     df_train = pd.read_csv('bases/HillValley/Hill_Valley_without_noise_Training.data')
     df_test = pd.read_csv('bases/HillValley/Hill_Valley_without_noise_Testing.data')
@@ -290,15 +283,15 @@ def letter():
     x = np.array(df.drop("lettr", 1))
     y = np.array(df.lettr)
     
-    return [x, y, 'Letter']
+    return [x, y, 'Letter', df.drop('lettr', 1).columns]
 
 def obs_network():
     dados = arff.loadarff('bases/obs_network/OBS-Network-DataSet_2_Aug27.arff')
     df = pd.DataFrame(dados[0])
 
     df['Class'] = df['Class'].replace([b'NB-No Block',b'Block',b'No Block',b'NB-Wait'], [0, 1, 2, 3])
-    df['Node Status'] = df['Node Status'].replace([b'B', b'NB', b'P NB'], [2, 0, 1])
-    print(df['Node Status'])
+    # comportamento na rede, b: comportando-se-1, nb: nao se comportando -- -1 e talvez nao se comportando pnb:0
+    df['Node Status'] = df['Node Status'].replace([b'B', b'NB', b'P NB'], [1, -1, 0])
     
     # converte para int
     head = df.head()    
@@ -310,47 +303,10 @@ def obs_network():
     
     x = np.array(df.drop('Class', 1))
     y = np.array(df.Class)
-    return [x, y, 'Obs Network']
+    return [x, y, 'Obs Network', df.drop('Class', 1).columns]
 
 def mice():
-    df = pd.read_excel('bases/mice/Data_Cortex_Nuclear.xls', enconding='utf-8')
-    '''df = df.drop(['MouseID',
-        'ITSN1_N',
-        'BDNF_N',	
-        'NR1_N',
-        'NR2A_N',
-        'pAKT_N',
-        'pBRAF_N',
-        'pCAMKII_N',
-        'pCREB_N',
-        'pELK_N',	'pERK_N',
-        'pJNK_N',	'PKCA_N',
-        'pMEK_N',
-        'pNR1_N',
-        'pNR2A_N',
-        'pNR2B_N',
-        'pPKCAB_N',
-        'pRSK_N',
-        'AKT_N',
-        'BRAF_N',
-        'CAMKII_N',
-        'CREB_N',
-        'ELK_N',
-        'ERK_N',
-        'GSK3B_N',
-        'JNK_N',
-        'MEK_N',
-        'TRKA_N',
-        'RSK_N',
-        'APP_N',
-        'Bcatenin_N',
-        'SOD1_N',
-        'MTOR_N',
-        'P38_N',
-        'pMTOR_N',
-        'DSCR1_N','AMPKA_N','NR2B_N','pNUMB_N','RAPTOR_N',
-        'TIAM1_N','pP70S6_N'], 1)
-    df = df.drop(['BAD_N', 'BCL2_N', 'pCFOS_N', 'H3AcK18_N', 'EGR1_N', 'H3MeK4_N'],1)'''
+    df = pd.read_excel('bases/mice/Data_Cortex_Nuclear.xls')
     
     treatment = df['Treatment']
     genotype = df['Genotype']
@@ -381,12 +337,16 @@ def mice():
     df['Saline'] = Saline
     df['C/S'] = CS
     df['S/C'] = SC
+    
+    # apagando binarios
     df = df.drop(['Treatment', 'Genotype', 'Behavior'], 1)
-    
-    #df.fillna(df.mean(0))
+    # apagando ids
     df = df.drop('MouseID', 1)
-    df = df.dropna(axis='columns')
+    #deletando linhas com valores falhos
+    df = df.dropna(axis=0)
     
+    # ajustando nomes das classes
+    df.rename(columns={'class':"Class"}, inplace=True)
     df['Class'] = df['Class'].replace(['c-CS-m', 'c-SC-m', 'c-CS-s', 'c-SC-s', 
         't-CS-m','t-SC-m', 't-CS-s', 't-SC-s'], [0, 1, 2, 3, 4, 5, 6, 7])
     
@@ -398,18 +358,22 @@ def mice():
     x = np.array(df.drop('Class', 1))
     y = np.array(df.Class)
     
-    return [x, y, 'Mice']
-    
+    return [x, y, 'Mice', df.drop('Class', 1).columns]
+
 def user_knowledge():
-    df = pd.read_csv('bases/UserKnowledge/Data_User_Modeling_Dataset_Hamdi Tolga KAHRAMAN.csv', sep='\s+')
+    # uso de excel para import
+    df_train = pd.read_excel('bases/UserKnowledge/Data_User_Modeling_Dataset_Hamdi Tolga KAHRAMAN.xls', sheet_name='Training_Data')
+    df_test = pd.read_excel('bases/UserKnowledge/Data_User_Modeling_Dataset_Hamdi Tolga KAHRAMAN.xls', sheet_name='Test_Data')
+    # concatenando o treino e teste das duas planilhas de um unico arquivo
+    df = df_train.append(df_test, ignore_index=True)
+    df.rename(columns={" UNS":"UNS"}, inplace=True)
     
     df['UNS'] = df['UNS'].replace(['very_low','Low','Middle','High'], [0, 1, 2, 3])
     x = np.array(df.drop("UNS", 1))
     y = np.array(df.UNS)
     
-    return [x, y, 'User Knowledge']
-    
-    
+    return [x, y, 'User Knowledge', df.drop("UNS", 1).columns]
+
 def wine_quality():
     df = pd.read_csv('bases/winequality/winequality.csv', sep=';')
 
@@ -417,10 +381,26 @@ def wine_quality():
     x = np.array(df.drop("quality", 1))
     y = np.array(df.quality)
 
-    
     return [x, y, 'Wine Quality']
     
-############################################# DEZEMBRO ################################################
+def wine_quality_red():
+    df = pd.read_csv('bases/winequality/winequality-red.csv', sep=';')
+
+    df.columns = ['fixed_acidity','volatile_acidity','citric_acid','residual_sugar','chlorides','free_sulfur_dioxide','total_sulfur_dioxide','density','pH','sulphates','alcohol','quality']
+    x = np.array(df.drop("quality", 1))
+    y = np.array(df.quality)
+
+    return [x, y, 'Wine Quality', df.drop("quality", 1).columns]
+
+def wine_quality_white():
+    df = pd.read_csv('bases/winequality/winequality-white.csv', sep=';')
+
+    df.columns = ['fixed_acidity','volatile_acidity','citric_acid','residual_sugar','chlorides','free_sulfur_dioxide','total_sulfur_dioxide','density','pH','sulphates','alcohol','quality']
+    x = np.array(df.drop("quality", 1))
+    y = np.array(df.quality)
+
+    return [x, y, 'Wine Quality', df.drop("quality", 1).columns]
+
 def lsvt():
     df = pd.read_excel('bases/LSVTVoiceRehabilitation/lsvt.xlsx', enconding='utf-8')
     df['Class'] = df['Class'].replace([1, 2], [0, 1])
@@ -625,3 +605,24 @@ def bank():
 def dorothea():
     df = pd.read_csv('bases/dorothea/')
 
+
+def waveform():
+    # nao eh necessario colocar as colunas, estao sendo setadas com numeros, como ocorre com as ids
+    df = pd.read_csv('bases/waveform/waveform-+noise.data', sep=',', header=None)
+    
+    x = np.array(df.drop(40, axis=1))
+    y = np.array(df[40])
+    
+    return [x, y, 'Waveform', df.drop(40, axis=1)]
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    

@@ -157,7 +157,7 @@ def forward_linear_regression(X, y):
             if indice not in ordem:
                 ordem.append(indice)
                 break
-        
+        v
     return ordem
 
 def RFE_linear_regression(X, y):
