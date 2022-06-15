@@ -275,10 +275,10 @@ def leaf():
 
 
 def letter():
-    df = pd.read_csv('bases/letter/letter-recognition.data')
+    df = pd.read_csv('bases/letter/letter-recognition.data', header=None)
     df.columns = ['lettr', 'a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7', 'a8', 'a9', 'a10', 'a11', 'a12', 'a13', 'a14', 'a15', 'a16']
     letras = ['A', 'B','C', 'D','E','F','G','H','I','J','K','L','M','N','O','P','Q', 'R','S','T','U','V','W','X','Y','Z']
-    df['lettr'] = df['lettr'].replace(letras, [x for x in range(len(letras))])
+    #df['lettr'] = df['lettr'].replace(letras, [x for x in range(len(letras))])
     
     x = np.array(df.drop("lettr", 1))
     y = np.array(df.lettr)
@@ -303,7 +303,7 @@ def obs_network():
     
     x = np.array(df.drop('Class', 1))
     y = np.array(df.Class)
-    return [x, y, 'Obs Network', df.drop('Class', 1).columns]
+    return [x, y, 'obs_network', df.drop('Class', 1).columns]
 
 def mice():
     df = pd.read_excel('bases/mice/Data_Cortex_Nuclear.xls')
@@ -342,8 +342,13 @@ def mice():
     df = df.drop(['Treatment', 'Genotype', 'Behavior'], 1)
     # apagando ids
     df = df.drop('MouseID', 1)
-    #deletando linhas com valores falhos
-    df = df.dropna(axis=0)
+
+    '''#deletando linhas com valores falhos
+    df = df.dropna(axis=0)'''
+
+    # deletando colunas com valores falhos, para impedir que nao sejam eliminadas muitas amostras
+    # mesmo que algumas colunas sejam eliminadas
+    df = df.dropna(axis=1)
     
     # ajustando nomes das classes
     df.rename(columns={'class':"Class"}, inplace=True)
@@ -367,8 +372,14 @@ def user_knowledge():
     # concatenando o treino e teste das duas planilhas de um unico arquivo
     df = df_train.append(df_test, ignore_index=True)
     df.rename(columns={" UNS":"UNS"}, inplace=True)
-    
+
+    #Deletando colunas extras ou vazias
+    df = df.dropna(axis=1)
+    #df = df.drop('Attribute Information:', axis=1)
+
     df['UNS'] = df['UNS'].replace(['very_low','Low','Middle','High'], [0, 1, 2, 3])
+    df['UNS'] = df['UNS'].replace(['Very Low'], [0]) # very low parece estar diferente
+
     x = np.array(df.drop("UNS", 1))
     y = np.array(df.UNS)
     
@@ -609,11 +620,13 @@ def dorothea():
 def waveform():
     # nao eh necessario colocar as colunas, estao sendo setadas com numeros, como ocorre com as ids
     df = pd.read_csv('bases/waveform/waveform-+noise.data', sep=',', header=None)
+
+    df.columns = [str(x) for x in range(40)] + ["Class"]
+
+    x = np.array(df.drop("Class", axis=1))
+    y = np.array(df["Class"])
     
-    x = np.array(df.drop(40, axis=1))
-    y = np.array(df[40])
-    
-    return [x, y, 'Waveform', df.drop(40, axis=1)]
+    return [x, y, 'Waveform', df.drop("Class", axis=1).columns]
 
 
     
