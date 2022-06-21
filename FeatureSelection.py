@@ -5,7 +5,7 @@ from tqdm import tqdm
 
 from sklearn.feature_selection import mutual_info_classif
 from sklearn.feature_selection import chi2, SelectKBest # chi square
-#from skfeature.function.similarity_based import fisher_score
+from skfeature.function.similarity_based import fisher_score
 from sklearn.feature_selection import RFE
 from mlxtend.feature_selection import SequentialFeatureSelector
 from sklearn.feature_selection import VarianceThreshold
@@ -22,6 +22,11 @@ def PCA(X): # retorna matriz centralizada e covariancia
     covariancia = XT @ X #np.dot(XT, X) # X.T @ X
     covariancia = covariancia/len(X) 
     aut_val, aut_vet = eigen.eig(covariancia) # (np.float(_) for _ in )
+
+    # convertendo resultado de complexo para real
+    aut_val = np.real(aut_val)
+    aut_vet = np.real(aut_vet)
+
     #aut_val, aut_vet = eigen.eig(covariancia.T) # uma matriz e sua transposta tem os mesmos autovetores
     # os autovetores são as colunas
     save = str(aut_val)
@@ -112,7 +117,7 @@ def chi2_square(X, y, k):
     
     ordem = [] # indices ordenados
     for ki in range(k): # a medida que ki aumenta surge um novo indice
-        chi2_features = SelectKBest(chi2, ki+1)
+        chi2_features = SelectKBest(chi2, k=ki+1)
         X_kbest_features = chi2_features.fit_transform(X_cat_pos, y)
         
         # selecionando os indices que são proeminentes
@@ -157,7 +162,7 @@ def forward_linear_regression(X, y):
             if indice not in ordem:
                 ordem.append(indice)
                 break
-        v
+        
     return ordem
 
 def RFE_linear_regression(X, y):
@@ -183,6 +188,7 @@ def RFE_linear_regression(X, y):
     # adicionando em seguida na lista ordenada, as primeiras que aparecem
     for k in range(len(X[0])):
         rfe = RFE(estimator=lr, n_features_to_select=k+1, step=1)
+        print("Y no RFE", y)
         rfe.fit(X, y)
         indices = list(np.where(rfe.support_ == True)[0])
         # verifica se o indice nao existe na lista ordenada

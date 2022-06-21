@@ -19,6 +19,7 @@ def treino_teste(classificador, treino_projetado, teste_projetado, treino_y, tes
         teste = teste_projetado[:, :k+1]
         
         treino = treino.astype(float) # caso esteja em complexo
+        #print("X",treino.shape)
         classificador.fit(treino, treino_y)
 
         teste = teste.astype(float)

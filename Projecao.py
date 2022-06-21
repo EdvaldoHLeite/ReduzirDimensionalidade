@@ -27,13 +27,14 @@ def projetar_bases(bases, nomes_reducao, numero_repeticoes):
     # para cada base
     for indice in range(len(bases)):
         
-        # dados da base5
+        # dados da base
         X = bases[indice][0]
         y = bases[indice][1]
         nome_base = bases[indice][2]
         nomes_colunas = bases[indice][3]
         
-        # divisão das n iteracoes        
+        # divisão das n iteracoes, para serem salvas depois
+        # Todos os testes, iteracoes, classificadores e metodos devem usar a mesma divisao de treino e teste, ao menos para cada base
         df_treino_indices = {}
         df_teste_indices = {}
         pasta_indices = "bases/"+nome_base+"/dividir_treino_teste"
@@ -42,8 +43,10 @@ def projetar_bases(bases, nomes_reducao, numero_repeticoes):
             df_treino_indices = pd.read_csv(pasta_indices+"/treino-"+str(numero_repeticoes)+".csv")
             df_teste_indices = pd.read_csv(pasta_indices+"/teste-"+str(numero_repeticoes)+".csv")
         else:
+            # ao inves de dividir a matriz, sera dividido os indices das linhas (gambiarra)
             X_indices = np.arange(len(X))
             for iteracao in range(numero_repeticoes):
+                # uso nos indices das linhas não nos dados
                 treino_x, teste_x, treino_y, teste_y = train_test_split(X_indices, y, test_size=0.5, stratify=y)
                 df_treino_indices[str(iteracao+1)] = treino_x
                 df_teste_indices[str(iteracao+1)] = teste_x
@@ -85,10 +88,11 @@ def projetar_bases(bases, nomes_reducao, numero_repeticoes):
             pasta_reducoes_resultados = "bases/"+nome_base+"/reducoes_resultados/"
             criar_pasta(pasta_salvar_pca) # cria a pasta onde ficara os pca de cada iteracao
             criar_pasta(pasta_reducoes_resultados)
+
             # usado para a quantidade de features media para certas reducoes
             quantidade_features_reducao = 0
             for iteracao in range(numero_repeticoes):
-                #print("Iteração:", iteracao+1)
+                #print(nome_base, nome_reducao, iteracao)
                 treino_indices = df_treino_indices[str(iteracao+1)]
                 teste_indices = df_teste_indices[str(iteracao+1)]
                 treino_x, teste_x = X[treino_indices], X[teste_indices]                
@@ -99,20 +103,26 @@ def projetar_bases(bases, nomes_reducao, numero_repeticoes):
                 treino_reduzido_x = None
                 teste_reduzido_x = None
                 
-                ######### PCA ###########
+                ######### PCA ##############################
+                
+                # save e load do numpy nao funcionam como antes, entao autovetores serao recalculados
                 pasta_iteracao_autvet = pasta_salvar_pca + "autvet-" + str(iteracao + 1)+".csv"
                 pasta_iteracao_autval = pasta_salvar_pca + "autval-" + str(iteracao + 1)+".csv"
                 if (not os.path.isfile(pasta_iteracao_autvet)): # se o pca não foi calculado
                     autovetores, autovalores = PCA(treino_x) # aplicacao do reducao normal
-                    
                     np.savetxt(pasta_iteracao_autvet, autovetores, delimiter=',')
                     np.savetxt(pasta_iteracao_autval, autovalores, delimiter=',')
                 else: # se existem os dados sao carregados
                     autovetores = np.loadtxt(pasta_iteracao_autvet, delimiter=',')
                     autovalores = np.loadtxt(pasta_iteracao_autval, delimiter=',')
+
+                # calculando autovetores e autovalores mesmo antes
+                autovetores, autovalores = PCA(treino_x)  # aplicacao do reducao normal
+
+                # Projecao do PCA
                 projecao_treino_x = treino_x @ autovetores
                 projecao_teste_x = teste_x @ autovetores
-                ##########################
+                ##############################################
                 
                 resultado_tree = []
                 resultado_gnb = []
@@ -125,6 +135,11 @@ def projetar_bases(bases, nomes_reducao, numero_repeticoes):
                     feature_importances.to_csv(pasta_reducoes_resultados+"info_gain-"+str(iteracao+1)+".csv")
                     treino_reduzido_x = projecao_treino_x[:, ordenado]
                     teste_reduzido_x = projecao_teste_x[:, ordenado]
+
+                elif "PCA" in nome_reducao:
+                    treino_reduzido_x = projecao_treino_x
+                    teste_reduzido_x = projecao_teste_x
+
                 elif "fishers_score" in nome_reducao:
                     # indices das features ordenadas em ordem decrescente de acordo com o fisher score
                     ordenado, feature_importances = fishers_score(projecao_treino_x, treino_y, nomes_colunas)
@@ -183,9 +198,17 @@ def projetar_bases(bases, nomes_reducao, numero_repeticoes):
                     resultado_knn = list(np.full(quant_feat, treino_teste_unico(knn_reducao, treino_reduzido_x, teste_reduzido_x, treino_y, teste_y)))
                     resultado_lda = list(np.full(quant_feat, treino_teste_unico(lda_reducao, treino_reduzido_x, teste_reduzido_x, treino_y, teste_y)))
                 else:
+                    #print(treino_reduzido.shape)
+
+                    ### reshape o array de treino de tree
+                    #tree_reduzido_x = np.array([sample] for sample in treino_reduzido_x)
+                    print("Tree")
                     resultado_tree = treino_teste(tree_reducao, treino_reduzido_x, teste_reduzido_x, treino_y, teste_y)
+                    print("GNB")
                     resultado_gnb = treino_teste(gnb_reducao, treino_reduzido_x, teste_reduzido_x, treino_y, teste_y)
+                    print("KNN")
                     resultado_knn = treino_teste(knn_reducao, treino_reduzido_x, teste_reduzido_x, treino_y, teste_y)
+                    print("LDA")
                     resultado_lda = treino_teste(lda_reducao, treino_reduzido_x, teste_reduzido_x, treino_y, teste_y)
 
                 ### adicionando resultados de cada feature

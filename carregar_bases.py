@@ -278,8 +278,8 @@ def letter():
     df = pd.read_csv('bases/letter/letter-recognition.data', header=None)
     df.columns = ['lettr', 'a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7', 'a8', 'a9', 'a10', 'a11', 'a12', 'a13', 'a14', 'a15', 'a16']
     letras = ['A', 'B','C', 'D','E','F','G','H','I','J','K','L','M','N','O','P','Q', 'R','S','T','U','V','W','X','Y','Z']
-    #df['lettr'] = df['lettr'].replace(letras, [x for x in range(len(letras))])
-    
+    df['lettr'] = df['lettr'].replace(letras, [x for x in range(len(letras))])
+
     x = np.array(df.drop("lettr", 1))
     y = np.array(df.lettr)
     
@@ -383,7 +383,7 @@ def user_knowledge():
     x = np.array(df.drop("UNS", 1))
     y = np.array(df.UNS)
     
-    return [x, y, 'User Knowledge', df.drop("UNS", 1).columns]
+    return [x, y, 'UserKnowledge', df.drop("UNS", 1).columns]
 
 def wine_quality():
     df = pd.read_csv('bases/winequality/winequality.csv', sep=';')
@@ -401,7 +401,7 @@ def wine_quality_red():
     x = np.array(df.drop("quality", 1))
     y = np.array(df.quality)
 
-    return [x, y, 'Wine Quality', df.drop("quality", 1).columns]
+    return [x, y, 'winequality-red', df.drop("quality", 1).columns]
 
 def wine_quality_white():
     df = pd.read_csv('bases/winequality/winequality-white.csv', sep=';')
@@ -410,7 +410,7 @@ def wine_quality_white():
     x = np.array(df.drop("quality", 1))
     y = np.array(df.quality)
 
-    return [x, y, 'Wine Quality', df.drop("quality", 1).columns]
+    return [x, y, 'winequality-white', df.drop("quality", 1).columns]
 
 def lsvt():
     df = pd.read_excel('bases/LSVTVoiceRehabilitation/lsvt.xlsx', enconding='utf-8')
