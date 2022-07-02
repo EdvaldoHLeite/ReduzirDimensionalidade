@@ -29,7 +29,13 @@ def main():
                      'RFE',
                      'variance_threshold'
                      ]
-    projetar_bases(bases, nomes_reducao, repeticoes)
+    #projetar_bases(bases, nomes_reducao, repeticoes)
+
+
+
+    import numpy as np
+    for b in bases:
+        print(str(b[2]) + ": " + str(len(np.unique(b[1])))) # quantidade de y
 main()
     
 

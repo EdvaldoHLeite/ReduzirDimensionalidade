@@ -17,7 +17,7 @@ import os
 from treino_teste import criar_pasta
 
 # classificadores
-knn_reducao = knn()
+knn_reducao = knn(n_neighbors=1)
 gnb_reducao = gnb()
 tree_reducao = tree()
 lda_reducao = lda()
