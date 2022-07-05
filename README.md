@@ -2,7 +2,7 @@
 Redução de dimensionalidade com Feature Selections. Aplicando projeção com o PCA e objetivando comparar os resultados com o MCEPCA.
 
 #### Os principais pacotes instalados foram nessas versões. A versão do Python usada foi a 3.8. Versões diferentes das bibliotecas ou do Python podem não funcionar
-* versão do Python: 3.8.6
+* versão do Python: 3.8.6, https://www.python.org/downloads/release/python-386/
 * pip install pandas==1.1.4
 * pip install scipy==1.5.4
 * pip install scikit-learn==0.24.0
