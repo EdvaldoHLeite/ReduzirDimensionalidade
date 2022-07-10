@@ -26,7 +26,6 @@ def projetar_bases(bases, nomes_reducao, numero_repeticoes):
     
     # para cada base
     for indice in range(len(bases)):
-        
         # dados da base
         X = bases[indice][0]
         y = bases[indice][1]
@@ -57,7 +56,7 @@ def projetar_bases(bases, nomes_reducao, numero_repeticoes):
             df_teste_indices.to_csv(pasta_indices+"/teste-"+str(numero_repeticoes)+".csv")
         
         
-        print("BASE: ",nome_base)
+        #print("BASE: ",nome_base)
         ## cataloga todas as classes do conjunto de dados
         classes = [] # classes encontradas
         # adiciona classes que nao foram adicionadas, que estejam apenas no teste
@@ -69,7 +68,7 @@ def projetar_bases(bases, nomes_reducao, numero_repeticoes):
         
         # para cada tecnica de redução de dimensionalidade
         for nome_reducao in nomes_reducao: # percorre as chaves
-            print("reducao: ",nome_reducao)
+            #print("reducao: ",nome_reducao)
 
             # listas das medias para cada iteracao
             mediasTree = np.zeros(maximo)
@@ -92,7 +91,7 @@ def projetar_bases(bases, nomes_reducao, numero_repeticoes):
             # usado para a quantidade de features media para certas reducoes
             quantidade_features_reducao = 0
             for iteracao in range(numero_repeticoes):
-                #print(nome_base, nome_reducao, iteracao)
+                print(nome_base, nome_reducao, iteracao)
                 treino_indices = df_treino_indices[str(iteracao+1)]
                 teste_indices = df_teste_indices[str(iteracao+1)]
                 treino_x, teste_x = X[treino_indices], X[teste_indices]                
@@ -202,13 +201,13 @@ def projetar_bases(bases, nomes_reducao, numero_repeticoes):
 
                     ### reshape o array de treino de tree
                     #tree_reduzido_x = np.array([sample] for sample in treino_reduzido_x)
-                    print("Tree")
+                    #print("Tree")
                     resultado_tree = treino_teste(tree_reducao, treino_reduzido_x, teste_reduzido_x, treino_y, teste_y)
-                    print("GNB")
+                    #print("GNB")
                     resultado_gnb = treino_teste(gnb_reducao, treino_reduzido_x, teste_reduzido_x, treino_y, teste_y)
-                    print("KNN")
+                    #print("KNN")
                     resultado_knn = treino_teste(knn_reducao, treino_reduzido_x, teste_reduzido_x, treino_y, teste_y)
-                    print("LDA")
+                    #print("LDA")
                     resultado_lda = treino_teste(lda_reducao, treino_reduzido_x, teste_reduzido_x, treino_y, teste_y)
 
                 ### adicionando resultados de cada feature

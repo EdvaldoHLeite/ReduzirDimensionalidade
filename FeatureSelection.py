@@ -188,7 +188,7 @@ def RFE_linear_regression(X, y):
     # adicionando em seguida na lista ordenada, as primeiras que aparecem
     for k in range(len(X[0])):
         rfe = RFE(estimator=lr, n_features_to_select=k+1, step=1)
-        print("Y no RFE", y)
+        #print("Y no RFE", y)
         rfe.fit(X, y)
         indices = list(np.where(rfe.support_ == True)[0])
         # verifica se o indice nao existe na lista ordenada

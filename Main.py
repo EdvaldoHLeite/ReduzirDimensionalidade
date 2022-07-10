@@ -1,4 +1,5 @@
 from carregar_bases import obs_network, letter, user_knowledge, mice, wine_quality_red, wine_quality_white, waveform
+from carregar_bases import banknote, climate, debrecen, occupancy, pima, vcolumn, wdbc, spambase
 from Projecao import projetar_bases
 import warnings
 
@@ -7,7 +8,7 @@ from PlotarGraficos import info_gain_grafico, fisher_score_grafico, graficos
 warnings.filterwarnings("ignore")
 
 def main():
-    bases = [
+    '''bases3 = [
         #obs_network(),
         letter(),
         user_knowledge(),
@@ -15,8 +16,18 @@ def main():
         wine_quality_red(),
         wine_quality_white(),
         waveform()
-    ]
-    repeticoes = 1
+    ]'''
+    bases2 = [
+        banknote(),
+        climate(),
+        debrecen(),
+        occupancy(),
+        pima(),
+        vcolumn(),
+        wdbc(),
+        spambase()
+        ]
+    repeticoes = 10
 
     ### coeficiente de correlacao nao esta constando nos testes anteriores
     #nomes_reducao = ['RFE']
@@ -29,13 +40,13 @@ def main():
                      'RFE',
                      'variance_threshold'
                      ]
-    #projetar_bases(bases, nomes_reducao, repeticoes)
+    projetar_bases(bases2, nomes_reducao, repeticoes)
 
 
 
-    import numpy as np
-    for b in bases:
-        print(str(b[2]) + ": " + str(len(np.unique(b[1])))) # quantidade de y
+    '''import numpy as np
+    for b in bases2:
+        print(str(b[2]) + ": " + str(len(np.unique(b[1])))) # quantidade de y'''
 main()
     
 

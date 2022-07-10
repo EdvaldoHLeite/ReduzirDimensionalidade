@@ -13,6 +13,8 @@ from scipy.io import arff
 
 def pima():
     df = pd.read_csv('bases/pima/pima-indians-diabetes.csv', sep=',')
+    df.columns = ['a'+str(x) for x in range(8)] + ['Class']
+    
     # possui os dados
     x = np.array(df.drop('Class',1))
 
@@ -23,6 +25,9 @@ def pima():
 
 def banknote():
     df = pd.read_csv('bases/banknote/data_banknote_authentication.txt')
+
+    df.columns = ['variance', 'skewness', 'curtosis', 'entropy', 'target']
+
     # possui os dados
     x = np.array(df.drop('target',1))
 
@@ -38,12 +43,12 @@ def climate():
     df = df.drop('Study', 1) # as ids serao apagadas
     df = df.drop('Run', 1)
     
-    x = np.array(df.drop('outcomes',1)) # axis=0 row e axis=1 columns    
+    x = np.array(df.drop('outcome',1)) # axis=0 row e axis=1 columns    
     # possui as classes
-    y = np.array(df.outcomes)
+    y = np.array(df.outcome)
 
     # 18 features
-    return [x, y, 'Climate', df.drop('outcomes',1).columns]
+    return [x, y, 'Climate', df.drop('outcome',1).columns]
     
 def debrecen():
     dados = arff.loadarff('bases/debrecen/messidor_features.arff')

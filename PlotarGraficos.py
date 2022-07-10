@@ -7,6 +7,10 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 
+# nomes das bases para plotagem de graficos
+from carregar_bases import obs_network, letter, user_knowledge, mice, wine_quality_red, wine_quality_white, waveform
+
+
 def info_gain_grafico(base, repeticoes):
     nome = base[2]
     colunas = base[3]
@@ -69,10 +73,18 @@ def fisher_info_gain():
     
 def graficos():
     ################ PCAs #################################################################
-    nomes_reducao = ["Forward", "MCEPCA"]    
-    #nomes_reducao = ["variance_threshold", "MCEPCA"]
+    '''nomes_reducao = ['PCA',
+                     'chi2_square',
+                     'LASSO',
+                     'fishers_score',
+                     'info_gain',
+                     'Forward',
+                     'RFE',
+                     'variance_threshold'
+                     ]'''
+    nomes_reducao = ["Forward", "PCA"]
     ############## configuracoes das imagens graficas ######################################
-    config = {"PCA":['PCA', 'r', '.'],
+    config = {"PCA":['PCA', 'b', '.'],
               "MCEPCA":["MCEPCA", 'b', '.'],
               "info_gain":["info_gain", 'k', '.'],
               "fishers_score":["fishers_score", 'g', '.'],
@@ -84,10 +96,21 @@ def graficos():
               "LASSO":["LASSO", "r", "."]}
     
     classificadores = ['tree','knn', 'gnb', 'lda']
-    bases = ["Banknote", "Climate", "Debrecen", 
-             "Pima", "VColumn", "WDBC", "Occupancy"]
+
+    '''bases = ["Banknote", "Climate", "Debrecen", 
+             "Pima", "VColumn", "WDBC", "Occupancy"]'''
+    bases = [
+        #obs_network(),
+        letter()[2],
+        user_knowledge()[2],
+        mice()[2],
+        wine_quality_red()[2],
+        wine_quality_white()[2],
+        waveform()[2]
+    ]
+    
     for base in bases:
-        carregar("resultados/repeticoes-100",
+        carregar("resultados/repeticoes-1",
                  base,
                  classificadores,
                  nomes_reducao,
