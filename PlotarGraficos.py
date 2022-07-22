@@ -73,7 +73,7 @@ def fisher_info_gain():
     
 def graficos():
     ################ PCAs #################################################################
-    '''nomes_reducao = ['PCA',
+    nomes_reducao = [
                      'chi2_square',
                      'LASSO',
                      'fishers_score',
@@ -81,8 +81,13 @@ def graficos():
                      'Forward',
                      'RFE',
                      'variance_threshold'
-                     ]'''
-    nomes_reducao = ["Forward", "PCA"]
+                     ]
+    
+    arranjos = []
+    for reducao in nomes_reducao:
+        arranjos.append(["PCA", reducao])
+    
+    
     ############## configuracoes das imagens graficas ######################################
     config = {"PCA":['PCA', 'b', '.'],
               "MCEPCA":["MCEPCA", 'b', '.'],
@@ -97,9 +102,9 @@ def graficos():
     
     classificadores = ['tree','knn', 'gnb', 'lda']
 
-    '''bases = ["Banknote", "Climate", "Debrecen", 
-             "Pima", "VColumn", "WDBC", "Occupancy"]'''
-    bases = [
+    '''bases2 = ["Banknote", "Climate", "Debrecen", 
+             "Pima", "VColumn", "WDBC", "Occupancy"]
+    bases3 = [
         #obs_network(),
         letter()[2],
         user_knowledge()[2],
@@ -107,14 +112,34 @@ def graficos():
         wine_quality_red()[2],
         wine_quality_white()[2],
         waveform()[2]
-    ]
+    ]'''
+
+
+    bases = [
+        #obs_network(),
+        letter()[2],
+        user_knowledge()[2],
+        mice()[2],
+        wine_quality_red()[2],
+        wine_quality_white()[2],
+        waveform()[2],
+        '''banknote()[2],
+        climate()[2],
+        debrecen()[2],
+        occupancy()[2],
+        pima()[2],
+        vcolumn()[2],
+        wdbc()[2],
+        spambase()[2],'''
+        ]
     
     for base in bases:
-        carregar("resultados/repeticoes-1",
-                 base,
-                 classificadores,
-                 nomes_reducao,
-                 config)
+        for arranjo in arranjos:
+            carregar("resultados/repeticoes-1",
+                     base,
+                     classificadores,
+                     arranjo,
+                     config)
 #graficos()
 #fisher_info_gain()       
 

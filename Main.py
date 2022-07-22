@@ -25,20 +25,21 @@ def main():
         pima(),
         vcolumn(),
         wdbc(),
-        spambase()
-        ]
-    repeticoes = 10
+        #spambase() Executar depois
+    ]
+    repeticoes = 100
 
     ### coeficiente de correlacao nao esta constando nos testes anteriores
     #nomes_reducao = ['RFE']
-    nomes_reducao = ['PCA',
+    nomes_reducao = ['MCEPCA',
+                    #'PCA',
                      'chi2_square',
-                     'LASSO',
+                     #'LASSO',
                      'fishers_score',
                      'info_gain',
                      'Forward',
                      'RFE',
-                     'variance_threshold'
+                     #'variance_threshold'
                      ]
     projetar_bases(bases2, nomes_reducao, repeticoes)
 
