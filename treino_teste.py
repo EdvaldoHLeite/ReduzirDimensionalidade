@@ -65,7 +65,7 @@ def salvar(tree, knn, gnb, lda, pastas, nome_pca, num_features):
 # nomes dos quatro classificadores, a ordem eh a mesma da plotagem dos subgraficos
 def carregar(pasta, nomeBase, nomes_classificadores, nomesPCA, config): # config eh um dicionario com label, cor e marker para cada pca
     caminho = pasta + '/' + nomeBase
-
+    #print(nomesPCA)
     # valores minimo e maximo para a escala em y
     ymin = 10000000
     ymax = 0
@@ -115,4 +115,8 @@ def carregar(pasta, nomeBase, nomes_classificadores, nomesPCA, config): # config
     full.full_screen_toggle()
     
     plt.show()
-    #plt.savefig(nomeBase+".png", bbox_inches='tight')
+
+    '''nomePng = nomeBase+"-"
+    for n in nomesPCA:
+        nomePng += n    
+    plt.savefig("graficos/"+nomePng+".png", bbox_inches='tight')'''

@@ -11,7 +11,8 @@ from mlxtend.feature_selection import SequentialFeatureSelector
 from sklearn.feature_selection import VarianceThreshold
 from sklearn.feature_selection import SelectFromModel
 
-from sklearn.linear_model import LinearRegression, LogisticRegression
+from sklearn.linear_model import LinearRegression, LogisticRegression, Lasso
+from sklearn.preprocessing import StandardScaler
 
 def PCA(X): # retorna matriz centralizada e covariancia
     media_matriz = X.mean(axis=0)
@@ -213,6 +214,8 @@ def variance_threshold(X, limiar):
     features = []
     # array com True se a variancia for diferente
     variancia_diferente = select_feature.get_support()
+    #print(select_feature.variances_)
+    
     for i in range(len(X[0])):
         if variancia_diferente[i]:
             features.append(i)
@@ -227,6 +230,18 @@ def LASSO(X, y):
     features = []
     # array com True se a variancia for diferente
     variancia_diferente = model.get_support()
+
+
+    #model2 = make_pipeline(StandardScaler(), Lasso(alpha=.015))
+    '''model2 = Lasso(alpha=1)
+    model2.fit(X, y)
+    a = abs(np.array([x for x in model2.coef_]))
+    
+    order_features = a.argsort()[(-1)*len(a):][::-1]
+    return order_features'''
+
+    #print(variancia_diferente)
+    #print(np.std(X, 0) * logistic.coef_)
     for i in range(len(X[0])):
         if variancia_diferente[i]:
             features.append(i)

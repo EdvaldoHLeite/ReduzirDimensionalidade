@@ -134,11 +134,6 @@ def projetar_bases(bases, nomes_reducao, numero_repeticoes):
                     feature_importances.to_csv(pasta_reducoes_resultados+"info_gain-"+str(iteracao+1)+".csv")
                     treino_reduzido_x = projecao_treino_x[:, ordenado]
                     teste_reduzido_x = projecao_teste_x[:, ordenado]
-
-                elif "PCA" in nome_reducao:
-                    treino_reduzido_x = projecao_treino_x
-                    teste_reduzido_x = projecao_teste_x
-
                 elif "fishers_score" in nome_reducao:
                     # indices das features ordenadas em ordem decrescente de acordo com o fisher score
                     ordenado, feature_importances = fishers_score(projecao_treino_x, treino_y, nomes_colunas)
@@ -149,6 +144,9 @@ def projetar_bases(bases, nomes_reducao, numero_repeticoes):
                     Sk = MCEPCA(projecao_treino_x, treino_x, maximo, classes, treino_y, autovalores, autovetores)
                     treino_reduzido_x = treino_x @ Sk
                     teste_reduzido_x = teste_x @ Sk
+                elif "PCA" in nome_reducao:
+                    treino_reduzido_x = projecao_treino_x
+                    teste_reduzido_x = projecao_teste_x
                 elif "chi2_square" in nome_reducao:
                     X_teste_cat = projecao_treino_x.astype(int) # passando para categorico
                     ordenado = chi2_square(X_teste_cat, treino_y, maximo)      
@@ -173,12 +171,13 @@ def projetar_bases(bases, nomes_reducao, numero_repeticoes):
                 elif "variance_threshold" in nome_reducao:
                     # diferente dos outros acima, o variance treshold usa esta lista como definitiva, não reduz a quantidade
                     ind_features = variance_threshold(projecao_treino_x, 0.3)
+                    print(ind_features)
                     quantidade_features_reducao += len(ind_features)
                     treino_reduzido_x = projecao_treino_x[:, ind_features]
                     teste_reduzido_x = projecao_teste_x[:, ind_features]
                 elif "LASSO" in nome_reducao:
                     ind_features = LASSO(projecao_treino_x, treino_y)
-                    
+                    print(ind_features)
                     quantidade_features_reducao += len(ind_features)
                     
                     treino_reduzido_x = projecao_treino_x[:, ind_features]
@@ -251,6 +250,9 @@ def projetar_bases(bases, nomes_reducao, numero_repeticoes):
                    nome_reducao+"_desvio_padrao", maximo)
             
             if "variance_threshold" in nome_reducao or "LASSO" in nome_reducao:
+                arquivo_reducoes = open("resultados/repeticoes-"+str(numero_repeticoes)+"/"+nome_base+"/quantidade-total-reducoes-"+nome_reducao+".txt", "w")
+                arquivo_reducoes.writelines(str(quantidade_features_reducao))
+                arquivo_reducoes.close()
                 print("Média de features: "+str(int(quantidade_features_reducao/numero_repeticoes)))
                 print("Original: "+str(len(X[0])))
 

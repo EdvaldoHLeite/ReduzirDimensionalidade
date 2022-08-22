@@ -75,34 +75,46 @@ def graficos():
     ################ PCAs #################################################################
     nomes_reducao = [
                      'chi2_square',
-                     'LASSO',
+                     #'LASSO',
                      'fishers_score',
                      'info_gain',
                      'Forward',
                      'RFE',
-                     'variance_threshold'
+                     #'variance_threshold'
                      ]
     
-    arranjos = []
+    '''arranjos = []
     for reducao in nomes_reducao:
-        arranjos.append(["PCA", reducao])
-    
+        arranjos.append(["PCA", reducao])'''
+
+    pcaPrincipal = "MCEPCA"
+    '''arranjos = [
+        [pcaPrincipal, 'Forward'],
+        [pcaPrincipal, 'info_gain'],
+        [pcaPrincipal, 'chi2_square']
+        ]'''
+    arranjos = [[pcaPrincipal, 'Forward', 'info_gain', 'chi2_square']]
+    #print(arranjos)
     
     ############## configuracoes das imagens graficas ######################################
     config = {"PCA":['PCA', 'b', '.'],
               "MCEPCA":["MCEPCA", 'b', '.'],
-              "info_gain":["info_gain", 'k', '.'],
-              "fishers_score":["fishers_score", 'g', '.'],
-              "correlation_coefficient":['correlation_coefficient', 'g', '.'],
-              "chi2_square":["chi2_square", 'g', '.'],
-              "RFE":["RFE", 'y', '.'],
-              "Forward":["Forward", 'g', '.'],
-              "variance_threshold":["Variance Threshold: 0.1", 'g', '.'],
-              "LASSO":["LASSO", "r", "."]}
-    
+              "info_gain":["info_gain", 'k', '+'],
+              #"fishers_score":["fishers_score", 'g', '.'],
+              #"correlation_coefficient":['correlation_coefficient', 'g', '.'],
+              "chi2_square":["chi2_square", 'y', '*'],
+              #"RFE":["RFE", 'r', '.'],
+              "Forward":["Forward", 'r', '2'],
+              #"variance_threshold":["Variance Threshold: 0.1", 'g', '.'],
+              #"LASSO":["LASSO", "r", "."]
+              }
+
+    ###### classificadores    
     classificadores = ['tree','knn', 'gnb', 'lda']
 
-    '''bases2 = ["Banknote", "Climate", "Debrecen", 
+
+    ####### bases
+    bases2 = ["Banknote", "Climate", "Debrecen", 
              "Pima", "VColumn", "WDBC", "Occupancy"]
     bases3 = [
         #obs_network(),
@@ -112,35 +124,18 @@ def graficos():
         wine_quality_red()[2],
         wine_quality_white()[2],
         waveform()[2]
-    ]'''
+    ]
 
-
-    bases = [
-        #obs_network(),
-        letter()[2],
-        user_knowledge()[2],
-        mice()[2],
-        wine_quality_red()[2],
-        wine_quality_white()[2],
-        waveform()[2],
-        '''banknote()[2],
-        climate()[2],
-        debrecen()[2],
-        occupancy()[2],
-        pima()[2],
-        vcolumn()[2],
-        wdbc()[2],
-        spambase()[2],'''
-        ]
-    
+    bases = bases2
+    ##### executando para as configuracoes
     for base in bases:
         for arranjo in arranjos:
-            carregar("resultados/repeticoes-1",
+            carregar("resultados/repeticoes-100",
                      base,
                      classificadores,
                      arranjo,
                      config)
-#graficos()
+graficos()
 #fisher_info_gain()       
 
 
